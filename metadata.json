@@ -1,0 +1,5 @@
+{
+  "name": "MicroMentor 1.1",
+  "description": "A SaaS web application designed for educators and creators to build and share short, interactive lessons on niche topics. The app includes a lesson builder with content and quiz creation, and a lesson viewer for learners to consume content and track progress.",
+  "requestFramePermissions": []
+}

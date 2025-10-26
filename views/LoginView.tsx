@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { supabase } from '../lib/supabaseClient';
+import Button from '../components/Button';
+import Input from '../components/Input';
+
+const LoginView: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const from = location.state?.from?.pathname || "/dashboard";
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(error.message);
+    } else {
+      navigate(from, { replace: true });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h1 className="text-center text-3xl font-bold text-violet-600 dark:text-violet-400">
+            MicroMentor
+          </h1>
+          <h2 className="mt-2 text-center text-lg text-slate-600 dark:text-slate-300">
+            Sign in to your account
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6 bg-white dark:bg-slate-800 p-8 rounded-lg shadow-lg" onSubmit={handleSubmit}>
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          <div className="rounded-md shadow-sm space-y-4">
+            <Input
+              id="email-address"
+              label="Email address"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Input
+              id="password"
+              label="Password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="mt-6">
+            <Button type="submit" className="w-full justify-center" disabled={loading}>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </Button>
+          </div>
+        </form>
+         <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+          Not a member?{' '}
+          <Link to="/register" className="font-medium text-violet-600 hover:text-violet-500 dark:text-violet-400 dark:hover:text-violet-300">
+            Create an account
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default LoginView;
